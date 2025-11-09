@@ -29,15 +29,13 @@ jobs:
         uses: actions/checkout@v4
 
       # Step 2: Set up the specific Python version for this matrix job
-      # This step has the required identifier in its 'name'
       - name: Set up Python ${{ matrix.python-version }}
-        id: matrix-1730345 # This step contains the required identifier
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
       # Step 3: Generate a unique build artifact (a simple text file)
-      - name: Generate build artifact
+      - name: Generate build artifact matrix-1730345
         run: |
           echo "This is the build log for Python version ${{ matrix.python-version }}." > build-log.txt
           echo "Build completed at $(date)" >> build-log.txt
