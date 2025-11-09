@@ -1,0 +1,54 @@
+# This workflow defines a matrix build for Task 6
+# It will run on any push to the main branch
+
+name: Matrix Build CI
+
+on:
+  push:
+    branches:
+      - main
+      - master # Include 'master' as well, just in case
+  workflow_dispatch: # Allows manual triggering from the Actions tab
+
+jobs:
+  build:
+    # Run the job on the latest Ubuntu runner
+    runs-on: ubuntu-latest
+    
+    # Define the matrix strategy
+    strategy:
+      fail-fast: false # Don't cancel other jobs if one fails
+      matrix:
+        # Define 3 variants for "python-version"
+        # This satisfies the "at least 3 different variants" requirement
+        python-version: ['3.9', '3.10', '3.11'] 
+
+    steps:
+      # Step 1: Check out the repository's code
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up the specific Python version for this matrix job
+      # This step has the required identifier in its 'name'
+      - name: Set up Python ${{ matrix.python-version }}
+        id: matrix-1730345 # This step contains the required identifier
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Step 3: Generate a unique build artifact (a simple text file)
+      - name: Generate build artifact
+        run: |
+          echo "This is the build log for Python version ${{ matrix.python-version }}." > build-log.txt
+          echo "Build completed at $(date)" >> build-log.txt
+
+      # Step 4: Upload the artifact using actions/upload-artifact@v4
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          # Create a unique name for the artifact using the matrix variant
+          # This satisfies the 'build-1730345-<variant>' prefix requirement
+          name: build-1730345-py${{ matrix.python-version }}
+          
+          # Specify the file(s) to upload
+          path: build-log.txt
